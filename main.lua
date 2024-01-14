@@ -2,48 +2,6 @@ require('src.Components.Initialization.Run')
 require('src.Components.Initialization.ErrorHandler')
 preloader = require 'src.Components.Initialization.Preloader'
 
-local function _findAssets(_path)
-    local items = love.filesystem.getDirectoryItems(_path)
-    for item = 1, #items, 1 do
-        local path = _path .. "/" .. items[item]
-        if love.filesystem.getInfo(path).type == "directory" then
-            _findAssets(path)
-        end
-        if love.filesystem.getInfo(path).type == "file" then
-            if string.match(path, "[^.]+$") == "png" then
-                table.insert(assetsPath, path)
-            end
-        end
-    end
-end
-
-
-local function _progressScreen(_type)
-    for a = 1, #assetsPath, 1 do
-        love.graphics.clear(232 / 255, 103 / 255, 152 / 255)
-
-        love.graphics.setColor(0, 0, 0, 0.5)
-        love.graphics.draw(gradientPresent, 0, 0, 0, love.graphics.getWidth(), 128)
-        love.graphics.draw(gradientPresent, 0, love.graphics.getHeight(), 0, love.graphics.getWidth(), -128)
-        love.graphics.setColor(1, 1, 1, 1)
-    
-        love.graphics.rectangle("line", love.graphics.getWidth() / 2 - 128, 400, 256, 32, 10)
-        love.graphics.rectangle("fill", love.graphics.getWidth() / 2 - 128, 400, math.floor(256 * (assetProgress / #assetsPath)), 32, 10)
-    
-        love.graphics.draw(loveimage, love.graphics.getWidth() - loveimage:getWidth() * 0.1 - (plus:getWidth() * 1.5) * 2, love.graphics.getHeight() - loveimage:getHeight() * 0.1, 0, 0.1, 0.1)
-        love.graphics.draw(plus, love.graphics.getWidth() - plus:getWidth() * 1.5 - (lmxsdk:getWidth() * 1.5), love.graphics.getHeight() - plus:getHeight() * 1.5, 0, 1.5)
-        love.graphics.draw(lmxsdk, love.graphics.getWidth() - (lmxsdk:getWidth() * 1.5), love.graphics.getHeight() - lmxsdk:getHeight() * 1.5, 0, 1.5, 1.5)
-        love.graphics.present()
-        
-        if _type == "images" then
-            AssetQueue.images[(assetsPath[a]:match("[^/]+$")):gsub(".png", "")] = love.graphics.newImage(assetsPath[a])
-        elseif _type == "sounds" then
-            AssetQueue.sounds[(assetsPath[a]:match("[^/]+$")):gsub(".ogg", "")] = love.audio.newSource(assetsPath[a], "static")
-        end
-        assetProgress = assetProgress + 1
-    end
-end
-
 function love.load()
     --% lib sources %--
     json = require 'libraries.json'
@@ -64,6 +22,8 @@ function love.load()
     thirst = require 'libraries.thirst'
     collision = require 'libraries.collision'
     recursiveLoader = require 'src.Components.Initialization.RecursiveLoader'
+
+    love.graphics.setDefaultFilter("nearest", "nearest")
 
     --% Console setup %--
     slab.SetINIStatePath(nil)
@@ -94,6 +54,7 @@ function love.load()
 
     --% Helper functions %--
     fontmanager = require 'src.Components.Helpers.FontManager'
+    lovecallbacks = require 'src.Components.Helpers.LoveCallbacks'
 
     --% Save setup %--
     lollipop.currentSave.game = {}
@@ -149,13 +110,19 @@ function love.load()
     gradientPresent:release()
     collectgarbage("collect")
 
-    gamestate.registerEvents()
+    local lovehandlers = lovecallbacks({"draw"})
+    gamestate.registerEvents(lovehandlers)
     gamestate.switch(playstate)
 end
 
 function love.draw()
+    love.graphics.setColor(1, 1, 1, 1)
+    gamestate.current():draw()
     love.graphics.print(love.timer.getFPS(), 5, 5)
+    
+    love.graphics.push()
     slab.Draw()
+    love.graphics.pop()
 end
 
 function love.update(elapsed)

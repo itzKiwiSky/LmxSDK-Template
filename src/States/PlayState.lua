@@ -1,9 +1,5 @@
 playstate = {}
 
-function playstate:init()
-    
-end
-
 function playstate:enter()
     
 end
