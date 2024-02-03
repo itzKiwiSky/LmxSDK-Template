@@ -14,6 +14,8 @@ function math.isPercent(a, b) return a / b * 100 end
 
 function math.onRange(n, max, range) return n / max * range end
 
+function math.remapToRange(value, start1, stop1, start2, stop2) return start2 + (value - start1) * ((stop2 - start2) / (stop1 - start1)) end
+
 function math.round(n, idp) return tonumber(string.format( '%.' .. (idp or 0) .. 'f', n)) end
 
 function math.byteToSize(byte)

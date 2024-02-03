@@ -8,7 +8,7 @@ function playstate:draw()
 
 end
 
-function playstate:update()
+function playstate:update(elapsed)
     
 end
 
