@@ -12,7 +12,6 @@ function love.load()
     lip = require 'libraries.lip'
     nativefs = require 'libraries.nativefs'
     xml = require 'libraries.xml'
-    slab = require 'libraries.slab'
     suit = require 'libraries.suit'
     bump = require 'libraries.bump'
     moonshine = require 'libraries.moonshine'
@@ -26,16 +25,7 @@ function love.load()
     love.graphics.setDefaultFilter("nearest", "nearest")
 
     --% Console setup %--
-    slab.SetINIStatePath(nil)
-    slab.Initialize({"NoDocks"})
-    consoleInterface = require 'src.Components.Interface.ConsoleInterface'
-    consoleControl = require 'src.Components.ConsoleControl'
-    consoleData = {
-        output = {},
-        input = "",
-        active = false,
-    }
-    require('src.Components.Initialization.ConsoleCommands')()
+
 
     --% Game registers %--
     registers = {
@@ -110,11 +100,11 @@ function love.load()
     gradientPresent:release()
     collectgarbage("collect")
 
-    local lovehandlers = lovecallbacks({"draw"})
-    gamestate.registerEvents(lovehandlers)
+    gamestate.registerEvents()
     gamestate.switch(playstate)
 end
 
+--[[
 function love.draw()
     love.graphics.setColor(1, 1, 1, 1)
     gamestate.current():draw()
@@ -143,3 +133,4 @@ function love.keypressed(k)
         end
     end
 end
+]]--

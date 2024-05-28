@@ -26,7 +26,9 @@ local function _findAssets(_type, _path)
 end
 
 local function _doLoad(_type, _index)
-    consoleControl.trace("Asset loaded : " .. preloader.assetsPath[_index])
+    if debugMode then
+        consoleControl.trace("Asset loaded : " .. preloader.assetsPath[_index])
+    end
 
     if _type == "images" then
         if string.find(preloader.assetsPath[_index], "_sheet") then
