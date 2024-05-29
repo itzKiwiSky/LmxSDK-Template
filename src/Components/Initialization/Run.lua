@@ -19,7 +19,7 @@ function love.run()
             slab.Initialize({"NoDocks"})
             
             consoleInterface = require 'src.Components.Interface.ConsoleInterface'
-            consoleControl = require 'src.Components.ConsoleControl'
+            consoleControl = require 'src.Components.Modules.ConsoleControl'
             consoleData = {
                 output = {},
                 input = "",
